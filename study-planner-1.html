@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>جدول الدراسة</title>
+<style>
+:root{--bg:#eaf0ef;--card:#f6f9f8;--ink:#23353b;--mute:#6a7f85;--line:#d3dfdd;--pri:#3f7f86;--pri2:#d7e9ea;--ok:#79ad8c;--okbg:#dcefe2;--no:#d58f8a;--nobg:#f6dedb;--chipL:88%;--chipS:38%;--sh:0 1px 2px rgba(35,53,59,.06),0 6px 18px rgba(35,53,59,.05)}
+[data-theme=dark]{--bg:#161f22;--card:#1f2b2f;--ink:#dbe7e8;--mute:#8da3a8;--line:#31434a;--pri:#6fb2b9;--pri2:#26393d;--ok:#6fae83;--okbg:#25382c;--no:#d98a84;--nobg:#3d2a29;--chipL:26%;--chipS:30%;--sh:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Tahoma,"Noto Naskh Arabic",Arial,sans-serif;line-height:1.6;transition:background .3s}
+.wrap{max-width:1250px;margin:auto;padding:18px}
+header{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-bottom:16px}
+h1{margin:0;font-size:1.6rem;font-weight:700}
+.date{color:var(--mute);font-size:.92rem}
+.tools{display:flex;flex-wrap:wrap;gap:8px}
+button,select,input,textarea{font:inherit;color:inherit}
+.btn{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 13px;cursor:pointer;transition:.15s}
+.btn:hover{border-color:var(--pri);color:var(--pri)}
+.btn.main{background:var(--pri);border-color:var(--pri);color:#fff}
+.btn.main:hover{color:#fff;filter:brightness(1.08)}
+:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--sh);margin-bottom:16px}
+.card h2{margin:0 0 12px;font-size:1.05rem}
+.overall{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.big{font-size:2.3rem;font-weight:700;color:var(--pri);min-width:92px}
+.bar{height:10px;background:var(--pri2);border-radius:99px;overflow:hidden;flex:1;min-width:160px}
+.bar i{display:block;height:100%;background:var(--pri);border-radius:99px;transition:width .4s}
+.meta{display:flex;gap:16px;flex-wrap:wrap;color:var(--mute);font-size:.9rem}
+.meta b{color:var(--ink)}
+.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+/* today */
+.today-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.today-row:last-child{border:0}
+.today-row .chip{flex:1}
+.lbl{font-size:.8rem;color:var(--mute)}
+.pair{display:flex;gap:10px;align-items:center}
+.pair div{display:flex;flex-direction:column;align-items:center}
+/* table */
+.tw{overflow-x:auto;border-radius:12px;border:1px solid var(--line)}
+table{border-collapse:separate;border-spacing:0;width:100%;table-layout:fixed;background:var(--card)}
+#tbl .chip{min-width:0;width:100%;padding:4px 2px;overflow:hidden;white-space:nowrap;text-overflow:clip}
+@media(max-width:760px){
+.wrap{padding:8px}.card{padding:10px 6px}
+#tbl th,#tbl td{padding:4px 0}
+#tbl th.day{font-size:.72rem}#tbl th.sub{font-size:.5rem;white-space:nowrap}th.sub .f{display:none}th.sub .s{display:inline}th.sub:not(.edge) small{display:none}th.edge small .f{display:inline}th.edge small .s{display:none}th.edge{overflow:visible}.c1{width:6.5%}.c2{width:7%}.tab{font-size:.68rem;padding:6px 0}
+#tbl .cell{width:16px;height:16px;border-width:1.5px;border-radius:5px;margin:auto}
+#tbl .chip{font-size:.6rem;padding:3px 0;border-radius:5px;font-weight:600}
+}
+th,td{padding:7px 6px;text-align:center;border-bottom:1px solid var(--line)}
+th.day{font-size:1rem;background:var(--pri2);border-left:2px solid var(--bg)}
+th.sub{font-size:.8rem;font-weight:500;color:var(--mute);background:var(--card)}
+td.sep,th.sep{border-left:2px solid var(--bg)}
+tr:last-child td{border-bottom:0}
+th.today,td.today{background:color-mix(in srgb,var(--pri) 9%,var(--card))}
+th.day.today{background:var(--pri);color:#fff}
+.chip{display:inline-block;padding:4px 12px;border-radius:9px;background:hsl(var(--h) var(--chipS) var(--chipL));cursor:pointer;font-weight:600;font-size:.92rem;min-width:84px;border:1px solid transparent}
+.chip:hover{border-color:var(--pri)}
+.chip.none{opacity:.55}
+.dim{opacity:.18}
+.cell{width:34px;height:34px;border-radius:9px;border:2px solid var(--line);background:transparent;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;transition:.15s}
+.cell svg{width:64%;height:64%;display:block}
+.dv .cell{width:42px;height:42px}
+.cell:hover{border-color:var(--pri)}
+.cell.s1{background:var(--okbg);border-color:var(--ok);color:var(--ok)}
+.tabs{display:flex;gap:6px;margin-bottom:10px}.tab{flex:1;min-width:0;padding:6px 2px;border:1px solid var(--line);background:transparent;border-radius:9px;cursor:pointer;font-size:.85rem}.tab.on{background:var(--pri);color:#fff;border-color:var(--pri)}.tab.now:not(.on){border-color:var(--pri);color:var(--pri)}
+.dv .bar{margin-bottom:6px}
+.clock.brk{color:var(--ok)}
+th.sub small{display:block;font-size:.85em;color:var(--ink);font-weight:600}th.sub .s{display:none}
+.c1{width:6%}.c2{width:8%}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin:10px 2px 0;color:var(--mute);font-size:.85rem;align-items:center}
+.legend .cell{width:22px;height:22px;font-size:.75rem;cursor:default;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-left:4px}
+/* stats */
+#secs{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+#secs .card{margin:0}
+.sec.full{grid-column:1/-1}
+@media(max-width:900px){#secs{grid-template-columns:1fr}}
+.mv{display:none;gap:8px;margin-bottom:10px}
+body.reorder .mv{display:flex}
+body.reorder .sec{outline:2px dashed var(--pri);outline-offset:-3px}
+.sect{font-size:.85rem;color:var(--mute);margin:12px 0 2px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.dbars{display:flex;gap:8px}
+.dcol{flex:1;min-width:0;text-align:center;font-size:.72rem;color:var(--mute);line-height:1.5}
+.dtrack{height:84px;display:flex;align-items:flex-end;margin-bottom:4px}
+.dtrack span{display:block;width:100%;background:var(--pri);border-radius:6px 6px 0 0;min-height:3px;opacity:.85}
+th.edge{background:var(--pri2)}th.edge small{color:var(--pri)}
+
+.srow{display:grid;grid-template-columns:90px 1fr 76px;gap:10px;align-items:center;margin-bottom:9px;font-size:.92rem}
+.srow .bar{height:8px}
+.srow small{color:var(--mute);text-align:left}
+/* timer */
+.clock{font-size:3rem;font-weight:700;text-align:center;letter-spacing:2px;font-variant-numeric:tabular-nums;color:var(--pri)}
+.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;margin-top:8px}
+.row input,.row select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:6px 9px}
+.row input[type=number]{width:62px}
+textarea{width:100%;min-height:120px;resize:vertical;line-height:1.7}
+.hist{font-size:.88rem;color:var(--mute);margin-top:8px}
+.hist span{display:inline-block;margin-left:10px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:10px;opacity:0;transition:.3s;pointer-events:none;font-size:.9rem}
+.toast.on{opacity:1}
+@media print{.tools,.card.noprint,.legend{display:none}body{background:#fff}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><h1>جدول الدراسة</h1><div class="date" id="date"></div></div>
+  <div class="tools">
+    <select class="btn" id="filter" aria-label="تصفية حسب المادة"></select>
+    <button class="btn" id="newWeek">أسبوع جديد</button>
+    <button class="btn" id="exp">تصدير</button>
+    <button class="btn" id="imp">استيراد</button>
+    <button class="btn" id="prt">طباعة</button>
+    <button class="btn" id="ord">ترتيب الأقسام</button>
+    <button class="btn" id="theme">الوضع الليلي</button>
+    <input type="file" id="file" accept=".json" hidden>
+  </div>
+</header>
+
+<div id="secs">
+<section class="card sec full" data-sec="prog">
+  <div class="mv"><button class="btn" data-mv="-1">▲ أعلى</button><button class="btn" data-mv="1">▼ أسفل</button></div>
+  <div class="overall">
+    <div class="big" id="pct">0%</div>
+    <div style="flex:1;min-width:200px">
+      <div class="bar"><i id="pbar" style="width:0"></i></div>
+      <div class="meta" style="margin-top:8px">
+        <span>منجز: <b id="nOk">0</b></span><span>متبقي: <b id="nLeft">0</b></span><span>تحضير: <b id="pPrep">0%</b></span><span>مراجعة: <b id="pRev">0%</b></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="card sec full" data-sec="table">
+  <div class="mv"><button class="btn" data-mv="-1">▲ أعلى</button><button class="btn" data-mv="1">▼ أسفل</button></div>
+  <h2>الجدول الأسبوعي: من السبت (تحضير) إلى الجمعة (مراجعة)</h2>
+  <div class="tw"><table id="tbl"></table></div>
+  <div class="legend">
+    <span>اضغط على المربع:</span>
+    <span><span class="cell"></span>فارغ</span>
+    <span><span class="cell s1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>تم</span>
+    <span>التحضير يوم قبل المادة والمراجعة يوم بعدها</span>
+    <span>انقر على اسم المادة لتعديلها</span>
+  </div>
+</section>
+
+<section class="card sec dv" data-sec="day">
+  <div class="mv"><button class="btn" data-mv="-1">▲ أعلى</button><button class="btn" data-mv="1">▼ أسفل</button></div>
+  <h2 id="todayT">جدول اليوم</h2><div class="tabs" id="tabs"></div><div id="today"></div>
+</section>
+
+<section class="card sec noprint" data-sec="timer">
+  <div class="mv"><button class="btn" data-mv="-1">▲ أعلى</button><button class="btn" data-mv="1">▼ أسفل</button></div>
+  <h2>مؤقت الدراسة</h2>
+  <div class="clock" id="clock">45:00</div>
+  <div class="row"><span class="lbl" id="mode">دراسة</span><span class="lbl" id="cyc"></span>
+    <select id="tSub"></select></div>
+  <div class="row">
+    <button class="btn main" id="tGo">ابدأ</button>
+    <button class="btn" id="tRs">إعادة</button>
+    <button class="btn" id="tSk">تخطي</button>
+    <label class="lbl">دراسة <input type="number" id="dF" value="45" min="1" max="180"></label>
+    <label class="lbl">استراحة <input type="number" id="dB" value="15" min="1" max="60"></label>
+  </div>
+  <div class="hist"><span>دراسة اليوم: <b id="mToday">0</b> د</span><span>هذا الأسبوع: <b id="mWeek">0</b> د</span></div>
+</section>
+
+<section class="card sec" data-sec="subj">
+  <div class="mv"><button class="btn" data-mv="-1">▲ أعلى</button><button class="btn" data-mv="1">▼ أسفل</button></div>
+  <h2>التقدم حسب المادة</h2><div id="subj"></div>
+</section>
+
+<section class="card sec" data-sec="chart">
+  <div class="mv"><button class="btn" data-mv="-1">▲ أعلى</button><button class="btn" data-mv="1">▼ أسفل</button></div>
+  <h2>الإنجاز حسب اليوم</h2><div class="dbars" id="dbars"></div>
+</section>
+
+<section class="card sec noprint" data-sec="notes">
+  <div class="mv"><button class="btn" data-mv="-1">▲ أعلى</button><button class="btn" data-mv="1">▼ أسفل</button></div>
+  <h2>ملاحظات</h2><textarea id="notes" placeholder="اكتب ملاحظاتك هنا"></textarea>
+  <div class="hist" id="hist"></div>
+</section>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'];
+const DEF=[
+['كيمياء','كيمياء','احياء','انكليزي','اسلامية','رياضيات'],
+['عربي','رياضيات','احياء','انكليزي','اسلامية','كيمياء'],
+['احياء','عربي','فيزياء','فيزياء','كيمياء','رياضيات'],
+['رياضيات','عربي','عربي','انكليزي','احياء','انكليزي'],
+['غير محدد','فيزياء','فيزياء','عربي','رياضيات','انكليزي']];
+const HUE={'كيمياء':165,'احياء':105,'فيزياء':210,'رياضيات':255,'عربي':35,'انكليزي':330,'اسلامية':55,'غير محدد':200};
+const ALL=['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'],SH=['سبت','أحد','اثن','ثلا','أرب','خمس','جمع'];
+const CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const KEY='studyPlannerV1';
+const $=s=>document.querySelector(s);
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+let S=load();
+function load(){let o={};try{o=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
+  const s=Object.assign({cells:{},subjects:DEF.map(r=>r.slice()),notes:'',hist:[],log:{},theme:'light'},o);
+  for(const k in s.cells)if(s.cells[k]!==1)delete s.cells[k];return s}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1800)}
+const hue=n=>HUE[n]??([...n].reduce((a,c)=>a+c.charCodeAt(0),0)*37%360);
+const active=(d,r)=>{const s=S.subjects[d][r];return s&&s!=='غير محدد'};
+const key=(d,r,t)=>d+'_'+r+'_'+t;
+const todayIdx=()=>{const g=new Date().getDay();return g<=4?g:-1};
+function allSubjects(){return [...new Set(S.subjects.flat().filter(s=>s&&s!=='غير محدد'))]}
+
+function cellBtn(d,r,t){const v=S.cells[key(d,r,t)]?1:0;
+  return `<button class="cell s${v}" data-k="${key(d,r,t)}" aria-pressed="${!!v}" aria-label="${t=='p'?'تحضير':'مراجعة'}">${v?CK:''}</button>`}
+function chip(d,r){const s=S.subjects[d][r];
+  return `<span class="chip ${active(d,r)?'':'none'}" data-e="${d}_${r}" style="--h:${hue(s)}" title="تعديل">${s||'—'}</span>`}
+
+function renderTable(){
+  const ti=todayIdx(),f=$('#filter').value;
+  let h='<colgroup>'+DAYS.map(()=>'<col class="c1"><col class="c2"><col class="c1">').join('')+'</colgroup><thead><tr>'+DAYS.map((n,d)=>`<th class="day sep ${d==ti?'today':''}" colspan="3">${n}</th>`).join('')+'</tr><tr>';
+  h+=DAYS.map((n,d)=>{const c=d==ti?'today':'';return `<th class="sub ${c} ${d==0?'edge':''}">تحضير<small><span class="f">${ALL[d]}</span><span class="s">${SH[d]}</span></small></th><th class="sub ${c}">المادة</th><th class="sub sep ${c} ${d==4?'edge':''}">مراجعة<small><span class="f">${ALL[d+2]}</span><span class="s">${SH[d+2]}</span></small></th>`}).join('')+'</tr></thead><tbody>';
+  for(let r=0;r<6;r++){h+='<tr>';
+    for(let d=0;d<5;d++){const c=d==ti?'today':'',dim=f&&S.subjects[d][r]!==f?'dim':'';
+      h+=`<td class="${c} ${dim}">${cellBtn(d,r,'p')}</td><td class="${c} ${dim}">${chip(d,r)}</td><td class="sep ${c} ${dim}">${cellBtn(d,r,'v')}</td>`}
+    h+='</tr>'}
+  $('#tbl').innerHTML=h+'</tbody>'}
+
+const calToday=()=>(new Date().getDay()+1)%7;
+let V=calToday();
+function renderToday(){const ct=calToday();
+  $('#tabs').innerHTML=ALL.map((n,i)=>`<button class="tab ${i==V?'on':''} ${i==ct?'now':''}" data-d="${i}">${n}</button>`).join('');
+  let h='',ok=0,t=0;
+  const cls=V-1;
+  if(cls>=0&&cls<=4){const names=[...new Set(S.subjects[cls].filter((x,r)=>active(cls,r)))];
+    h+=`<div class="sect">مواد اليوم</div><div class="chips">${names.map(n=>`<span class="chip" style="--h:${hue(n)};cursor:default">${n}</span>`).join('')}</div>`}
+  const grp=(title,D,type)=>{if(D<0||D>4)return;let g='';
+    for(let r=0;r<6;r++){if(!active(D,r))continue;t++;if(S.cells[key(D,r,type)])ok++;g+=`<div class="today-row">${chip(D,r)}${cellBtn(D,r,type)}</div>`}
+    if(g)h+=`<div class="sect">${title}</div>`+g};
+  grp('تحضير مواد '+DAYS[V],V,'p');
+  grp('مراجعة مواد '+DAYS[V-2],V-2,'v');
+  $('#todayT').textContent='جدول '+ALL[V]+(t?` — ${ok} من ${t}`:'');
+  $('#today').innerHTML=(t?`<div class="bar"><i style="width:${Math.round(ok/t*100)}%"></i></div>`:'')+(h||'<div class="lbl">لا توجد مهام في هذا اليوم.</div>')}
+
+const SECS=['prog','table','day','timer','subj','chart','notes'];
+function applyOrder(){let o=(S.order||[]).filter(x=>SECS.includes(x));SECS.forEach(x=>{if(!o.includes(x))o.push(x)});S.order=o;
+  const box=$('#secs');o.forEach(id=>box.appendChild(box.querySelector(`[data-sec="${id}"]`)))}
+$('#ord').onclick=()=>{const on=document.body.classList.toggle('reorder');$('#ord').textContent=on?'تم':'ترتيب الأقسام'};
+function calc(){const out=[];for(let i=0;i<7;i++){let a=0,b=0;
+  for(const[D,ty]of[[i,'p'],[i-2,'v']]){if(D<0||D>4)continue;for(let r=0;r<6;r++){if(!active(D,r))continue;b++;if(S.cells[key(D,r,ty)])a++}}
+  out.push(b?Math.round(a/b*100):0)}return out}
+
+function stats(){let ok=0,tot=0,pOk=0,pT=0,rOk=0,rT=0;const per={},day=[];
+  for(let d=0;d<5;d++){let dOk=0,dT=0;
+    for(let r=0;r<6;r++){if(!active(d,r))continue;const s=S.subjects[d][r];per[s]=per[s]||{ok:0,t:0};
+      for(const t of['p','v']){const v=S.cells[key(d,r,t)]?1:0;tot++;dT++;per[s].t++;
+        if(t=='p')pT++;else rT++;
+        if(v){ok++;dOk++;per[s].ok++;t=='p'?pOk++:rOk++}}}
+    day.push(dT?Math.round(dOk/dT*100):0)}
+  return{ok,tot,per,day,cal:calc(),pp:pT?Math.round(pOk/pT*100):0,rp:rT?Math.round(rOk/rT*100):0}}
+
+function renderStats(){const s=stats(),p=s.tot?Math.round(s.ok/s.tot*100):0;
+  $('#pct').textContent=p+'%';$('#pbar').style.width=p+'%';
+  $('#nOk').textContent=s.ok;$('#nLeft').textContent=s.tot-s.ok;
+  $('#pPrep').textContent=s.pp+'%';$('#pRev').textContent=s.rp+'%';
+  $('#subj').innerHTML=Object.entries(s.per).sort((a,b)=>b[1].ok/b[1].t-a[1].ok/a[1].t).map(([n,v])=>{const q=Math.round(v.ok/v.t*100);
+    return `<div class="srow"><span class="chip" style="--h:${hue(n)};min-width:0;text-align:center;cursor:default">${n}</span><div class="bar"><i style="width:${q}%;background:hsl(${hue(n)} 40% 50%)"></i></div><small>${v.ok}/${v.t}</small></div>`}).join('');
+  $('#dbars').innerHTML=s.cal.map((v,i)=>`<div class="dcol"><div class="dtrack"><span style="height:${v*0.84}px"></span></div>${v}%<br>${ALL[i]}</div>`).join('');
+  const m=minutes();$('#mToday').textContent=m.today;$('#mWeek').textContent=m.week;
+  $('#hist').innerHTML=S.hist.length?'الأسابيع السابقة: '+S.hist.slice(-6).map(h=>`<span>${h.d}: <b>${h.p}%</b></span>`).join(''):''}
+
+function minutes(){const t=todayStr();let w=0;const now=new Date();
+  for(let i=0;i<7;i++){const d=new Date(now);d.setDate(now.getDate()-i);const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');w+=S.log[k]||0}
+  return{today:S.log[t]||0,week:w}}
+
+function renderAll(){renderTable();renderToday();renderStats()}
+function fillFilters(){const a=allSubjects(),f=$('#filter'),v=f.value,ts=$('#tSub'),tv=ts.value;
+  f.innerHTML='<option value="">كل المواد</option>'+a.map(x=>`<option>${x}</option>`).join('');f.value=a.includes(v)?v:'';
+  ts.innerHTML='<option value="">بدون مادة</option>'+a.map(x=>`<option>${x}</option>`).join('');ts.value=tv}
+
+document.addEventListener('click',e=>{
+  const c=e.target.closest('.cell[data-k]');
+  if(c){const k=c.dataset.k;if(S.cells[k])delete S.cells[k];else S.cells[k]=1;save();renderAll();return}
+  const mv=e.target.closest('[data-mv]');
+  if(mv){const sec=mv.closest('.sec'),id=sec.dataset.sec,i=S.order.indexOf(id),j=i+ +mv.dataset.mv;
+    if(j>=0&&j<S.order.length){[S.order[i],S.order[j]]=[S.order[j],S.order[i]];save();applyOrder();sec.scrollIntoView({block:'center',behavior:'smooth'})}return}
+  const tb=e.target.closest('.tab');if(tb){V=+tb.dataset.d;renderToday();return}
+  const ch=e.target.closest('[data-e]');
+  if(ch){const[d,r]=ch.dataset.e.split('_').map(Number);const n=prompt('اسم المادة:',S.subjects[d][r]);
+    if(n!==null){S.subjects[d][r]=n.trim()||'غير محدد';save();fillFilters();renderAll()}}});
+$('#filter').onchange=renderTable;
+
+$('#theme').onclick=()=>{S.theme=S.theme=='dark'?'light':'dark';applyTheme();save()};
+function applyTheme(){document.documentElement.dataset.theme=S.theme;$('#theme').textContent=S.theme=='dark'?'الوضع النهاري':'الوضع الليلي'}
+$('#prt').onclick=()=>print();
+$('#newWeek').onclick=()=>{if(!confirm('سيتم حفظ نسبة هذا الأسبوع ومسح كل العلامات. متابعة؟'))return;
+  const s=stats();S.hist.push({d:todayStr(),p:s.tot?Math.round(s.ok/s.tot*100):0});S.cells={};save();renderAll();toast('بدأ أسبوع جديد')};
+$('#exp').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));a.download='study-planner-backup.json';a.click();toast('تم تصدير النسخة')};
+$('#imp').onclick=()=>$('#file').click();
+$('#file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{S=Object.assign(S,JSON.parse(r.result));for(const k in S.cells)if(S.cells[k]!==1)delete S.cells[k];save();applyTheme();fillFilters();$('#notes').value=S.notes;renderAll();toast('تم الاستيراد')}catch(x){toast('الملف غير صالح')}};r.readAsText(f)};
+$('#notes').oninput=e=>{S.notes=e.target.value;save()};
+
+/* timer */
+S.timer=S.timer||{f:45,b:15};$('#dF').value=S.timer.f;$('#dB').value=S.timer.b;
+let T={focus:true,left:0,end:0,run:false,id:0,n:1,ctx:null,wl:null};
+const UP=[523.25,659.25,783.99,1046.5],DOWN=[783.99,659.25,523.25];
+const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+const len=()=>(T.focus?+$('#dF').value:+$('#dB').value)*60;
+function setLen(){T.left=len();paint()}
+function paint(){$('#clock').textContent=fmt(Math.max(0,T.left));$('#clock').classList.toggle('brk',!T.focus);
+  $('#mode').textContent=T.focus?'دراسة':'استراحة';$('#cyc').textContent='· الجلسة '+T.n;
+  document.title=T.run?fmt(T.left)+' — جدول الدراسة':'جدول الدراسة'}
+function audio(){try{if(!T.ctx)T.ctx=new(window.AudioContext||window.webkitAudioContext)();if(T.ctx.state==='suspended')T.ctx.resume()}catch(e){}return T.ctx}
+function chime(notes){const c=audio();if(!c)return;let t=c.currentTime+.05;
+  notes.forEach(f=>{[[1,.2],[2.01,.05]].forEach(([m,a])=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f*m;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(a,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+1.3);
+    o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+1.4)});t+=.3})}
+async function lockWL(){try{T.wl=await navigator.wakeLock.request('screen')}catch(e){}}
+function freeWL(){try{T.wl&&T.wl.release()}catch(e){}T.wl=null}
+function phaseDone(){
+  if(T.focus){const t=todayStr();S.log[t]=(S.log[t]||0)+(+$('#dF').value);save();renderStats();chime(UP.concat(UP));toast('انتهت الدراسة، استراحة '+$('#dB').value+' دقيقة')}
+  else{T.n++;chime(DOWN.concat(DOWN));toast('انتهت الاستراحة، الجلسة '+T.n)}
+  navigator.vibrate&&navigator.vibrate([200,100,200]);
+  T.focus=!T.focus;T.left=len();T.end=Date.now()+T.left*1000;paint()}
+function tick(){T.left=Math.round((T.end-Date.now())/1000);if(T.left<=0)phaseDone();else paint()}
+$('#tGo').onclick=()=>{audio();
+  if(T.run){clearInterval(T.id);T.run=false;$('#tGo').textContent='متابعة';freeWL();paint();return}
+  T.end=Date.now()+T.left*1000;T.run=true;$('#tGo').textContent='إيقاف مؤقت';T.id=setInterval(tick,250);lockWL()};
+$('#tRs').onclick=()=>{clearInterval(T.id);T.run=false;T.focus=true;T.n=1;freeWL();$('#tGo').textContent='ابدأ';setLen()};
+$('#tSk').onclick=()=>{if(!T.focus)T.n++;T.focus=!T.focus;T.left=len();if(T.run)T.end=Date.now()+T.left*1000;paint()};
+$('#dF').onchange=$('#dB').onchange=()=>{S.timer={f:+$('#dF').value||45,b:+$('#dB').value||15};save();if(!T.run)setLen()};
+document.addEventListener('visibilitychange',()=>{if(T.run&&document.visibilityState==='visible'){lockWL();tick()}});
+
+$('#date').textContent=new Date().toLocaleDateString('ar-IQ',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+$('#notes').value=S.notes;applyTheme();fillFilters();applyOrder();renderAll();setLen();
+</script>
+</body>
+</html>
